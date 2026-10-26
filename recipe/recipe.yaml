@@ -14,10 +14,11 @@ build:
   number: 0
   script:
     - cd src
-    - go-licenses save ./cmd/doggo --save_path ../library_licenses
     # golang.org/x/sys v0.49.0 breaks PIE binaries on ppc64le: https://github.com/golang/go/issues/82324
+    # Use the fix from x/sys master until doggo depends on a release containing it.
     - if: ppc64le
-      then: export GOFLAGS="${GOFLAGS} -buildmode=exe"
+      then: go get golang.org/x/sys@v0.49.1-0.20261022125458-f5cb0306ac0e
+    - go-licenses save ./cmd/doggo --save_path ../library_licenses
     - if: unix
       then: go build -v -o $PREFIX/bin/doggo -ldflags="-s -w" ./cmd/doggo
       else: go build -v -o %LIBRARY_BIN%\doggo.exe -ldflags="-s" .\cmd\doggo
